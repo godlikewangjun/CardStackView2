@@ -25,6 +25,10 @@ public class CardStackLayoutManager
 
     private final Context context;
 
+    public void setListener(CardStackListener listener) {
+        this.listener = listener;
+    }
+
     private CardStackListener listener = CardStackListener.DEFAULT;
     private CardStackSetting setting = new CardStackSetting();
     private CardStackState state = new CardStackState();
