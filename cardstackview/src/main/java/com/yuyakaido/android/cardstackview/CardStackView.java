@@ -2,6 +2,7 @@ package com.yuyakaido.android.cardstackview;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
@@ -32,7 +33,7 @@ public class CardStackView extends RecyclerView {
         if (manager instanceof CardStackLayoutManager) {
             super.setLayoutManager(manager);
         } else {
-            throw new IllegalArgumentException("CardStackView must be set CardStackLayoutManager.");
+            Log.e("CardStackView","CardStackView must be set CardStackLayoutManager.");
         }
     }
 
