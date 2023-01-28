@@ -252,7 +252,7 @@ public class CardStackLayoutManager
         }
     }
 
-    private void update(RecyclerView.Recycler recycler) {
+    public void update(RecyclerView.Recycler recycler) {
         state.width = getWidth();
         state.height = getHeight();
 
