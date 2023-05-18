@@ -3,6 +3,7 @@ package com.yuyakaido.android.cardstackview;
 import android.content.Context;
 import android.graphics.PointF;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Interpolator;
@@ -30,8 +31,9 @@ public class CardStackLayoutManager
     }
 
     private CardStackListener listener = CardStackListener.DEFAULT;
-    private CardStackSetting setting = new CardStackSetting();
-    private CardStackState state = new CardStackState();
+    private final CardStackSetting setting = new CardStackSetting();
+    private final CardStackState state = new CardStackState();
+    Handler mHandler=new Handler(Looper.getMainLooper());
 
     public CardStackLayoutManager(Context context) {
         this(context, CardStackListener.DEFAULT);
@@ -79,12 +81,7 @@ public class CardStackLayoutManager
 
         switch (state.status) {
             case Idle:
-                if (setting.swipeableMethod.canSwipeManually()) {
-                    state.dx -= dx;
-                    update(recycler);
-                    return dx;
-                }
-                break;
+            case ManualSwipeAnimating:
             case Dragging:
                 if (setting.swipeableMethod.canSwipeManually()) {
                     state.dx -= dx;
@@ -105,13 +102,6 @@ public class CardStackLayoutManager
                 break;
             case AutomaticSwipeAnimated:
                 break;
-            case ManualSwipeAnimating:
-                if (setting.swipeableMethod.canSwipeManually()) {
-                    state.dx -= dx;
-                    update(recycler);
-                    return dx;
-                }
-                break;
             case ManualSwipeAnimated:
                 break;
         }
@@ -127,12 +117,6 @@ public class CardStackLayoutManager
 
         switch (state.status) {
             case Idle:
-                if (setting.swipeableMethod.canSwipeManually()) {
-                    state.dy -= dy;
-                    update(recycler);
-                    return dy;
-                }
-                break;
             case Dragging:
                 if (setting.swipeableMethod.canSwipeManually()) {
                     state.dy -= dy;
@@ -269,7 +253,11 @@ public class CardStackLayoutManager
             // 4. Aをスワイプする
             // 5. カードを1枚だけ画面に表示する（このカードをBとする）
             // 6. ページング完了後はBが表示されるはずが、Aが画面に表示される
-            removeAndRecycleView(getTopView(), recycler);
+            try {
+                removeAndRecycleView(getTopView(), recycler);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             final Direction direction = state.getDirection();
 
@@ -312,7 +300,7 @@ public class CardStackLayoutManager
              *         at com.android.internal.os.Zygote$MethodAndArgsCaller.run(Zygote.java:240)
              *         at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:767)
              */
-            new Handler().post(new Runnable() {
+            mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     listener.onCardSwiped(direction);
